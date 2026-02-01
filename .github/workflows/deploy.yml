@@ -77,6 +77,43 @@ jobs:
           echo "EOF" >> $GITHUB_OUTPUT
           echo "commit_count=$COMMIT_COUNT" >> $GITHUB_OUTPUT
 
+      - name: 📢 Slack - 배포 시작
+        uses: slackapi/slack-github-action@v1.25.0
+        continue-on-error: true
+        with:
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "🚀 배포 시작 - ${{ env.SERVICE_NAME }}",
+                    "emoji": true
+                  }
+                },
+                {
+                  "type": "section",
+                  "fields": [
+                    {"type": "mrkdwn", "text": "*버전:*\n`${{ steps.info.outputs.version }}`"},
+                    {"type": "mrkdwn", "text": "*환경:*\n`${{ github.event.inputs.environment || 'demo' }}`"},
+                    {"type": "mrkdwn", "text": "*브랜치:*\n`${{ github.ref_name }}`"},
+                    {"type": "mrkdwn", "text": "*트리거:*\n`${{ github.actor }}`"}
+                  ]
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "*📝 커밋 (${{ steps.info.outputs.commit_count }}개):*\n${{ steps.info.outputs.commit_info }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+
       - name: 🔐 Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
