@@ -121,11 +121,11 @@ class LoadGenerator:
                 
                 if response.status_code == 200:
                     self.logged_in = True
-                    logger.info("로그인 성공 - demo")
+                    logger.info("로그인 성공! - demo")
                     login_span.set_tag("login.success", True)
                     return True
                 else:
-                    logger.warning(f"로그인 실패 - Status: {response.status_code}")
+                    logger.warning(f"로그인 실패! - Status: {response.status_code}")
                     login_span.set_tag("login.success", False)
                     login_span.set_tag("error.message", f"Login failed with status {response.status_code}")
                     return False
